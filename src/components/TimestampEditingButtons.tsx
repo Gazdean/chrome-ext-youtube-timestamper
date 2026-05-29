@@ -37,6 +37,7 @@ export default function TimestampEditingButtons({setIsAddingDescriptionTo, stamp
       >
       Edit
       </Button>
+      
       <Button
         className="me-1 my-1 rounded-0 rounded-end-2 jusify-self-end"
         variant="danger"
