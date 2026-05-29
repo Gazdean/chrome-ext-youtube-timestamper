@@ -1,0 +1,29 @@
+{
+    "manifest_version": 3,
+    "version": "1.0.0",
+    "name": "Youtube Timestamper",
+    "action": {},
+    "side_panel": {
+        "default_path": "src/sidePanel/index.html"
+    },
+    "background": {
+        "service_worker": "background.js"
+    },
+    "commands": {
+        "open_side_panel": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+O",
+                "mac": "Command+Shift+O"
+            },
+            "description": "Opens the side panel"
+        }
+    },
+    "content_scripts": [
+        {
+            "matches": ["https://www.youtube.com/watch?*", "https://www.youtube.com/shorts/*"],
+            "js": ["content.js"]
+        }
+    ],
+    "permissions": ["sidePanel", "scripting", "contextMenus", "storage", "tabs"],
+    "host_permissions": ["https://www.youtube.com/watch?*", "https://www.youtube.com/shorts/*"]
+}
