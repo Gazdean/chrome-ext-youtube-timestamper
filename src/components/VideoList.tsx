@@ -51,7 +51,7 @@ export default function VideoList({
             
             {isEditing && (
               <Button className="me-1 my-1 rounded-0 rounded-end-2 jusify-self-end" variant="danger" onClick={() => handleDeleteVideo(id)}>
-                X
+                Del
               </Button>
             )}
           </ListGroup.Item>
