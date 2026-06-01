@@ -28,25 +28,6 @@ export default function YouTubeVideoPage({
     if (message.type === "TITLE_UPDATED") setTitle(message.title)
   });
 
-  // useEffect(() => {
-    
-  //   console.log("title in store", videoEntry.title)
-  //   console.log("is title undefined", videoEntry.title === undefined)
-  //   if (videoEntry.title === undefined) {
-  //     chrome.tabs.sendMessage(
-  //     activeTabId,
-  //     { type: "GET_VIDEO_TITLE" },
-  //     async (response) => {
-  //       if (chrome.runtime.lastError) {
-  //         console.error("Error: Content Script not loaded. Refresh YouTube.");
-  //         return;         
-  //       }
-  //       console.log(response)
-  //     },
-  //   );
-  //   }
-  // }, [videoEntry.title, activeTabId])
-
   const handleOnClickMarkTimestamp = () => {
     // send message to content to grab timestamp and video title
     chrome.tabs.sendMessage(
@@ -98,11 +79,11 @@ export default function YouTubeVideoPage({
       <Button
         className="mb-4"
         style={{ width: "180px" }}
-        variant={isAdPlaying ? "warning" : "primary"}
+        variant={isAdPlaying ? "warning" : isTimeStampLimitReached ? "danger" : "primary"}
         onClick={handleOnClickMarkTimestamp}
         disabled={isTimeStampLimitReached || isAdPlaying || isEditing}
       >
-        {isAdPlaying ? "Please Wait" : "Mark Timestamp"}
+        {isAdPlaying ? "Please Wait" : isTimeStampLimitReached ? "Limit Reached" : "Mark Timestamp"}
       </Button>
 
       {Object.keys(videoEntry).length ? (
