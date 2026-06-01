@@ -48,49 +48,51 @@ export default function TimestampList({
           );
         }
 
-        return (
-          <ListGroup.Item
-            key={stamp.timeInSeconds + i}
-            className="d-flex flex-row justify-content-center m-0 p-0"
-            action
-            onClick={() =>
-              !isEditing &&
-              navigateActiveTab(
-                createYouTubeUrl(youTubeVideoId, stamp.timeInSeconds),
-              )
-            }
-          >
-            <div className="m-1 flex-grow-1">
-              <p className="h4 m-0 me-2 align-self-center">
-                {convertToHMS(stamp.timeInSeconds)}
-              </p>
+        else {
+          return (
+            <ListGroup.Item
+              key={stamp.timeInSeconds + i}
+              className="d-flex flex-row justify-content-center m-0 p-0"
+              action
+              onClick={() =>
+                !isEditing &&
+                navigateActiveTab(
+                  createYouTubeUrl(youTubeVideoId, stamp.timeInSeconds),
+                )
+              }
+            >
+              <div className="m-1 flex-grow-1">
+                <p className="h4 m-0 me-2 align-self-center">
+                  {convertToHMS(stamp.timeInSeconds)}
+                </p>
 
-              {stamp.description && <p className="h4">{stamp.description}</p>}
+                {stamp.description && <p className="h4">{stamp.description}</p>}
 
-              {!isEditing && !stamp.description && (
-                <Button
-                  variant="outline-primary"
-                  onClick={(e) => {
-                    e.stopPropagation();
+                {!isEditing && !stamp.description && (
+                  <Button
+                    variant="outline-primary"
+                    onClick={(e) => {
+                      e.stopPropagation();
 
-                    setIsAddingDescriptionTo(stamp.timeInSeconds);
-                  }}
-                >
-                  Add Description
-                </Button>
+                      setIsAddingDescriptionTo(stamp.timeInSeconds);
+                    }}
+                  >
+                    Add Description
+                  </Button>
+                )}
+              </div>
+
+              {isEditing && (
+                <TimestampEditingButtons
+                  setIsAddingDescriptionTo={setIsAddingDescriptionTo}
+                  stamp={stamp}
+                  youTubeVideoId={youTubeVideoId}
+                  setIsEditing={setIsEditing}
+                />
               )}
-            </div>
-
-            {isEditing && (
-              <TimestampEditingButtons
-                setIsAddingDescriptionTo={setIsAddingDescriptionTo}
-                stamp={stamp}
-                youTubeVideoId={youTubeVideoId}
-                setIsEditing={setIsEditing}
-              />
-            )}
-          </ListGroup.Item>
-        );
+            </ListGroup.Item>
+          );
+        }
       })}
     </ListGroup>
   );
