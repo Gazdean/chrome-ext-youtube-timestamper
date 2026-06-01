@@ -43,7 +43,7 @@ export default function TimestampEditingButtons({setIsAddingDescriptionTo, stamp
         variant="danger"
         onClick={() => handleOnClickDelete(stamp.timeInSeconds)}
       >
-        X
+        Del
       </Button>
     </ButtonGroup>
   )
