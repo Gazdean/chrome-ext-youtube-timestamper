@@ -1,10 +1,10 @@
 console.log("IN CONTENT.TS")
 
-const getActiveVideo = () => {
+const getActiveVideo = (): HTMLVideoElement | undefined  => {
   // get all videos as youtube shorts page has more than one video element
   const videos = Array.from(document.querySelectorAll('video'));
+
   // Filter for the one that is actually being displayed to the user
-  // Shorts videos that aren't active usually have 0 width/height or are hidden
   const activeVideo = videos.find((video) => {
     const rect = video.getBoundingClientRect();
     return (
@@ -17,7 +17,7 @@ const getActiveVideo = () => {
   return activeVideo
 }
 
-const createTimestamp = () => {
+const createTimestamp = (): number | null => {
   const activeVideo = getActiveVideo()
 
   if (activeVideo) {
@@ -28,7 +28,7 @@ const createTimestamp = () => {
   return null;
 };
 
-const getVideoTitle = () => {
+const getVideoTitle = (): string => {
   const mainTitle = document.title.replace(/\(\d+\)\s?/, "").replace(/\s?-\s?YouTube/, "").trim()
 
   const youTubeShortTitle = document.querySelector(".reel-video-info-renderer h2 span")?.textContent?.trim()
