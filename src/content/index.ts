@@ -4,7 +4,7 @@ const getActiveVideo = (): HTMLVideoElement | undefined  => {
   // get all videos as youtube shorts page has more than one video element
   const videos = Array.from(document.querySelectorAll('video'));
 
-  // Filter for the one that is actually being displayed to the user
+  // Filter videos for the one that is actually being displayed to the user
   const activeVideo = videos.find((video) => {
     const rect = video.getBoundingClientRect();
     return (
@@ -76,28 +76,16 @@ advertObserver.observe(document.body, { attributes: true, subtree: true, attribu
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log("Recieved message", request.type, sender)
 
-  if (request.type === "CHECK_ADVERT_STATUS") {
-    const player = document.querySelector('.html5-video-player');
-    const isAd = !!(
-      player?.classList.contains('ad-showing') || 
-      document.querySelector('.ytp-ad-skip-button') ||
-      document.querySelector('.ytp-ad-player-overlay')
-    );
-    sendResponse({ isAd });
-  }
-  else if (request.type === "MARK_TIMESTAMP") {
+  if (request.type === "MARK_TIMESTAMP") {
     const response = {time: createTimestamp(), videoTitle: getVideoTitle(), pauseIsSuccessful: false}
    
     if (request.pauseVideo === true) response.pauseIsSuccessful = pauseVideo()
     sendResponse(response);
   }
   else if (request.type === "GET_VIDEO_TITLE") {
-    console.log("Get title")
     sendResponse({videoTitle: getVideoTitle()})
   }
   else if (request.type === "PLAY_VIDEO") {
-    console.log(">>>> PLAYING VIDEO")
-    
     sendResponse({isVideoPlaying: playVideo()})
   }
 });
