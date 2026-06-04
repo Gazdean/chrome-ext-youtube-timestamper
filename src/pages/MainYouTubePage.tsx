@@ -18,7 +18,12 @@ export default function MainYouTubePage({
   const videoKeys = Object.keys(videoData || {});
   const videoCount = videoKeys.length;
 
-  if (videoCount === 0) return (<h2>You have no videos stored</h2>)
+  if (videoCount === 0) return (
+    <div>
+      <h2>You have no videos stored</h2>
+      <p>Please choose a YouTube video</p>
+    </div>
+  )
   return (
     <div>
       <h2>
