@@ -29,12 +29,10 @@ export default function ExtensionInfoModal({setShowModal}: DetailModalProps) {
           <Modal.Title>Extension Details</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>This extension allows you to create a list of timestamps for the current YouTube video you are watching.</p>
-          <p>Use the <strong>Mark Timestamp</strong> button to add upto <strong>{STORAGE_LIMITS.MAX_TIMESTAMPS_PER_VIDEO}</strong> timestamps to upto <strong>{STORAGE_LIMITS.MAX_VIDEOS}</strong> videos.</p>
-          <p>Turn <strong>Add Description</strong> on to add a short description to your timestamp.</p>
-          <p>Turn <strong>Auto Pause</strong> on to automatically pause the video when you click the Mark Timestamp button.</p>
-          <p>To give you time to write the timestamp description.</p>
-          <p>The video will restart automatically on submission of the timestamp data.</p>
+          <p>This extension allows you to create a list of timestamps for the YouTube video you are watching.</p>
+          <p>Click the <strong>Mark Timestamp</strong> button to add upto <strong>{STORAGE_LIMITS.MAX_TIMESTAMPS_PER_VIDEO}</strong> timestamps for a maximum of <strong>{STORAGE_LIMITS.MAX_VIDEOS}</strong> videos.</p>
+          <p>Click <strong>Add Description</strong> to add a short description to your timestamp.</p>
+          <p>Turn the <strong>Auto Pause</strong> option on to automatically pause the video when you click the Mark Timestamp button. This gives you time to write a description for the timestamp. The video will restart automatically on submission of your description</p>
         </Modal.Body>
 
         <Modal.Footer>
