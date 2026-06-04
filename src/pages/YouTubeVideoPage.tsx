@@ -2,7 +2,7 @@ import { Button } from "react-bootstrap";
 import type { StoredConfig, VideoEntry, VideoTimeStamps } from "../types";
 import { sortVideoEntrysAscOrder } from "../utils";
 import { STORAGE_LIMITS } from "../constants";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import EditButton from "../components/EditButton";
 import TimestampList from "../components/TimestampList";
@@ -26,6 +26,18 @@ export default function YouTubeVideoPage({
   const [isAddingDescriptionTo, setIsAddingDescriptionTo] = useState<
     number | null
   >(null);
+
+  useEffect(() => {
+    if (!isAutoPauseEnabled && isAddingDescriptionTo) {
+      chrome.tabs.sendMessage(
+        activeTabId,
+        { type: "PLAY_VIDEO"},
+        async (response) => {
+          console.log(response)
+        }
+      )
+    }
+  }, [isAutoPauseEnabled, isAddingDescriptionTo, activeTabId])
 
   
   chrome.runtime.onMessage.addListener((message) => {
