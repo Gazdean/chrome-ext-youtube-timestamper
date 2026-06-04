@@ -6,6 +6,7 @@ import { useState } from "react";
 
 import EditButton from "../components/EditButton";
 import TimestampList from "../components/TimestampList";
+import AutoPauseButton from "../components/AutoPauseButton";
 
 interface VideoTimestampInfoProps {
   activeTabId: number;
@@ -21,6 +22,11 @@ export default function YouTubeVideoPage({
   const [isAdPlaying, setIsAdPlaying] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState("")
+  const [isAutoPauseEnabled, setIsAutoPauseEnabled] = useState(false)
+  const [isAddingDescriptionTo, setIsAddingDescriptionTo] = useState<
+    number | null
+  >(null);
+
   
   chrome.runtime.onMessage.addListener((message) => {
     if (message.type === "UPDATE_UI_AD_STATUS" && message.forTabId === activeTabId) setIsAdPlaying(message.isAd);
@@ -32,7 +38,7 @@ export default function YouTubeVideoPage({
     // send message to content to grab timestamp and video title
     chrome.tabs.sendMessage(
       activeTabId,
-      { type: "MARK_TIMESTAMP" },
+      { type: "MARK_TIMESTAMP", pauseVideo: isAutoPauseEnabled},
       async (response) => {
         if (chrome.runtime.lastError) {
           console.error("Error: Content Script not loaded. Refresh YouTube.");
@@ -65,6 +71,11 @@ export default function YouTubeVideoPage({
               [youTubeVideoId]: newVideoEntry,
             },
           });
+
+          if (isAutoPauseEnabled) {
+            setIsAddingDescriptionTo(timeStamp)
+          }
+          
         }
       },
     );
@@ -76,6 +87,7 @@ export default function YouTubeVideoPage({
 
   return (
     <div className="mx-1">
+      <AutoPauseButton isAutoPauseEnabled={isAutoPauseEnabled} setIsAutoPauseEnabled={setIsAutoPauseEnabled}/>
       <Button
         className="mb-4"
         style={{ width: "180px" }}
@@ -95,6 +107,10 @@ export default function YouTubeVideoPage({
             videoEntry={videoEntry}
             isEditing={isEditing}
             setIsEditing={setIsEditing}
+            isAddingDescriptionTo={isAddingDescriptionTo}
+            setIsAddingDescriptionTo={setIsAddingDescriptionTo}
+            activeTabId={activeTabId}
+            isAutoPauseEnabled={isAutoPauseEnabled}
           />
         </div>
       ) : (

@@ -5,9 +5,11 @@ import { useEffect, useState } from "react";
 interface AddDescriptionFormProps {
   youTubeVideoId: string;
   isAddingDescriptionTo: number;
-  setIsAddingDescriptionTo: React.Dispatch<React.SetStateAction<number | null>>
-  currentDescription: string
-  isEditing: boolean
+  setIsAddingDescriptionTo: React.Dispatch<React.SetStateAction<number | null>>;
+  currentDescription: string;
+  isEditing: boolean;
+  activeTabId: number;
+  isAutoPauseEnabled: boolean
 }
 
 export default function AddDescriptionForm({
@@ -15,7 +17,9 @@ export default function AddDescriptionForm({
   isAddingDescriptionTo,
   setIsAddingDescriptionTo,
   currentDescription,
-  isEditing
+  isEditing,
+  activeTabId,
+  isAutoPauseEnabled
 }: AddDescriptionFormProps) {
   const [description, setDescription] = useState("");
 
@@ -41,8 +45,20 @@ export default function AddDescriptionForm({
 
       await chrome.storage.local.set({ videoData: currentVideoData });
     }
+    
     setIsAddingDescriptionTo(null);
     setDescription("");
+
+    if (isAutoPauseEnabled) {
+      chrome.tabs.sendMessage(
+        activeTabId,
+        { type: "PLAY_VIDEO"},
+        async (response) => {
+          console.log(response)
+        }
+      )
+    }
+    
   };
 
   return (
@@ -57,11 +73,6 @@ export default function AddDescriptionForm({
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             autoFocus
-            onKeyDown={(e) => {
-              if (e.key === " ") {
-                e.stopPropagation();
-              }
-            }}
           />
         </Form.Group>
         <Button className="ms-1" variant="primary" type="submit">

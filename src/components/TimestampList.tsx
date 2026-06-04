@@ -4,13 +4,16 @@ import AddDescriptionForm from "./AddDescriptionForm";
 import type { VideoEntry } from "../types";
 import { navigateActiveTab } from "../chromeHelpers";
 import TimestampEditingButtons from "./TimestampEditingButtons";
-import { useState } from "react";
 
 interface TimestampListProps {
   youTubeVideoId: string;
   videoEntry: VideoEntry;
   isEditing: boolean;
   setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
+  isAddingDescriptionTo: number | null;
+  setIsAddingDescriptionTo: React.Dispatch<React.SetStateAction<number | null>>;
+  activeTabId: number,
+  isAutoPauseEnabled: boolean
 }
 
 export default function TimestampList({
@@ -18,11 +21,11 @@ export default function TimestampList({
   videoEntry,
   isEditing,
   setIsEditing,
+  isAddingDescriptionTo,
+  setIsAddingDescriptionTo,
+  activeTabId,
+  isAutoPauseEnabled
 }: TimestampListProps) {
-  
-  const [isAddingDescriptionTo, setIsAddingDescriptionTo] = useState<
-    number | null
-  >(null);
 
   return (
     <ListGroup>
@@ -43,6 +46,8 @@ export default function TimestampList({
                 setIsAddingDescriptionTo={setIsAddingDescriptionTo}
                 currentDescription={stamp.description || ""}
                 isEditing={isEditing}
+                activeTabId={activeTabId}
+                isAutoPauseEnabled={isAutoPauseEnabled}
               />
             </ListGroup.Item>
           );
