@@ -10,8 +10,7 @@ const getActiveVideo = () => {
     return (
       video.readyState >= 2 && // Has metadata/data
       rect.width > 0 && // Is physically visible width
-      rect.height > 0 &&  // Is physically visible height
-      video.paused === false   // Usually the active Short is the only one playing
+      rect.height > 0  // Is physically visible height
     );
   }) || videos[0];
 
@@ -38,6 +37,26 @@ const getVideoTitle = () => {
                         || document.querySelector("h1.ytd-video-primary-info-renderer")?.textContent?.trim();
   
   return   youTubeWatchTitle || youTubeShortTitle || mainTitle
+}
+
+const pauseVideo = (): boolean => {
+  const activeVideo = getActiveVideo()
+
+  if (activeVideo) {
+    activeVideo.pause()
+    return true
+  }
+  return false
+}
+
+const playVideo = (): boolean => {
+  const activeVideo = getActiveVideo()
+
+  if (activeVideo) {
+    activeVideo.play()
+    return true
+  }
+  return false
 }
 
 // Advert Observer
@@ -67,10 +86,18 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     sendResponse({ isAd });
   }
   else if (request.type === "MARK_TIMESTAMP") {
-    sendResponse({time: createTimestamp(), videoTitle: getVideoTitle()});
+    const response = {time: createTimestamp(), videoTitle: getVideoTitle(), pauseIsSuccessful: false}
+   
+    if (request.pauseVideo === true) response.pauseIsSuccessful = pauseVideo()
+    sendResponse(response);
   }
   else if (request.type === "GET_VIDEO_TITLE") {
     console.log("Get title")
     sendResponse({videoTitle: getVideoTitle()})
+  }
+  else if (request.type === "PLAY_VIDEO") {
+    console.log(">>>> PLAYING VIDEO")
+    
+    sendResponse({isVideoPlaying: playVideo()})
   }
 });
