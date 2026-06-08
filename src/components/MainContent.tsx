@@ -14,7 +14,7 @@ export default function MainContent() {
   const [activeTabId, setActiveTabId] = useState<number | null>(null);
   const [activeTabUrl, setActiveTabUrl] = useState<string>("");
   const [videoData, setVideoData] = useState<VideoData>({} as VideoData);
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
 
   // Validate page state useEffect
   useEffect(() => {
@@ -64,16 +64,14 @@ export default function MainContent() {
 
   // Fetch video data from chrome storage
   useEffect(() => {
-    
     const fetchVideoData = async () => {
-      setIsLoading(true)
+      setIsLoading(true);
       const data = await chrome.storage.local.get("videoData");
       const config = data as StoredConfig;
       setVideoData(config.videoData || {});
-      setIsLoading(false)
+      setIsLoading(false);
     };
     fetchVideoData();
-    
   }, [activeTabUrl]);
 
   useEffect(() => {
@@ -86,23 +84,45 @@ export default function MainContent() {
     return () => chrome.storage.onChanged.removeListener(sync);
   }, []);
 
-  if (isLoading) return <p>Loading...</p>
-  
-  const isAtVideoStorageLimit = Object.keys(videoData).length >= STORAGE_LIMITS.MAX_VIDEOS;
+  if (isLoading) return <p>Loading...</p>;
+
+  const isAtVideoStorageLimit =
+    Object.keys(videoData).length >= STORAGE_LIMITS.FREE_TIER_MAX_VIDEOS;
 
   if (isValidPage && !isEnabled)
-    return <MainYouTubePage videoData={videoData} isAtVideoStorageLimit={isAtVideoStorageLimit}/>;
-  
+    return (
+      <MainYouTubePage
+        videoData={videoData}
+        isAtVideoStorageLimit={isAtVideoStorageLimit}
+      />
+    );
+
   const youTubeVideoId: string = getYouTubeVideoIdFromUrl(activeTabUrl);
   const isAlreadyInStorage = Object.keys(videoData).includes(youTubeVideoId);
 
-  if (isValidPage && isEnabled && activeTabId && isAtVideoStorageLimit && !isAlreadyInStorage) {
-    return <MainYouTubePage videoData={videoData} isAtVideoStorageLimit={isAtVideoStorageLimit}/>;
+  if (
+    isValidPage &&
+    isEnabled &&
+    activeTabId &&
+    isAtVideoStorageLimit &&
+    !isAlreadyInStorage
+  ) {
+    return (
+      <MainYouTubePage
+        videoData={videoData}
+        isAtVideoStorageLimit={isAtVideoStorageLimit}
+      />
+    );
   }
 
   const videoEntry: VideoEntry = videoData?.[youTubeVideoId] || {};
 
-  if (isValidPage && isEnabled && activeTabId && (!isAtVideoStorageLimit || isAtVideoStorageLimit && isAlreadyInStorage))
+  if (
+    isValidPage &&
+    isEnabled &&
+    activeTabId &&
+    (!isAtVideoStorageLimit || (isAtVideoStorageLimit && isAlreadyInStorage))
+  )
     return (
       <YouTubeVideoPage
         key={youTubeVideoId}

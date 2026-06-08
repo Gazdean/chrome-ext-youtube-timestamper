@@ -59,6 +59,12 @@ const playVideo = (): boolean => {
   return false
 }
 
+const getVideoDuration = (): number  => {
+  const activeVideo = getActiveVideo()
+  if (activeVideo) return activeVideo.duration
+  else return 0
+}
+
 // Advert Observer
 const advertObserver = new MutationObserver(() => {
   const player = document.querySelector('.html5-video-player');
@@ -77,9 +83,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log("Recieved message", request.type, sender)
 
   if (request.type === "MARK_TIMESTAMP") {
-    const response = {time: createTimestamp(), videoTitle: getVideoTitle(), pauseIsSuccessful: false}
+    const response = {time: createTimestamp(), videoTitle: getVideoTitle(), pauseIsSuccessful: false, videoDuration: 0}
    
     if (request.pauseVideo === true) response.pauseIsSuccessful = pauseVideo()
+    if (request.getVideoDuration === true) response.videoDuration= getVideoDuration()
     sendResponse(response);
   }
   else if (request.type === "GET_VIDEO_TITLE") {

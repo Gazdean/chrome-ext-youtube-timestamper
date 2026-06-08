@@ -18,22 +18,23 @@ export default function MainYouTubePage({
   const videoKeys = Object.keys(videoData || {});
   const videoCount = videoKeys.length;
 
-  if (videoCount === 0) return (
-    <div>
-      <h2>You have no videos stored</h2>
-      <p>Please choose a YouTube video</p>
-    </div>
-  )
+  if (videoCount === 0)
+    return (
+      <div>
+        <h2>You have no videos stored</h2>
+        <p>Please choose a YouTube video</p>
+      </div>
+    );
   return (
     <div>
       <h2>
-        Your video list {videoCount}/{STORAGE_LIMITS.MAX_VIDEOS}
+        Your video list {videoCount}/{STORAGE_LIMITS.FREE_TIER_MAX_VIDEOS}
       </h2>
 
       {isAtVideoStorageLimit && (
         <p className="text-danger">
-          Storage limit reached, to add timestamps please delete any
-          unwanted videos
+          Storage limit reached, to add timestamps please delete any unwanted
+          videos
         </p>
       )}
 

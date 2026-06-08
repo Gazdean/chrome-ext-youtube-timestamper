@@ -13,6 +13,7 @@ export type VideoTimeStamps = VideoTimestamp[]
 
 export interface VideoEntry {
     title: string;
+    maxTimestamps: number;
     videoTimestamps: VideoTimeStamps
     created_at: number
 }
