@@ -1,15 +1,25 @@
 export const APP_INFO = {
-    APP_TITLE: "YouTube Timestamper"
-}
+  APP_TITLE: "YouTube Timestamper",
+};
+
+export const TIMESTAMP_CONSTANTS = {
+  BASE_NUMBER_TIMESTAMPS_PER_VIDEO: 5,
+  FREE_TIER_MINUTES_PER_EXTRA_TIME_STAMP: 4,
+  PAID_TIER_MINUTES_PER_EXTRA_TIME_STAMP: 1,
+};
 
 export const STORAGE_LIMITS = {
-    MAX_VIDEOS: 3,
-    MAX_TIMESTAMPS_PER_VIDEO: 5,
-    MAX_TITLE_LENGTH: 100
-}
+  FREE_TIER_MAX_VIDEOS: 5,
+  FREE_TIER_MAX_TIMESTAMPS: 400,
+  PAID_TIER_MAX_VIDEOS: 20,
+  PAID_TIER_MAX_TIMESTAMPS: 1000,
+  MAX_TITLE_LENGTH: 100,
+
+  FREE_TIER_MAX_TIMESTAMPS_PER_VIDEO: 5,
+};
 
 export const APP_CONFIG = {
-    YOUTUBE_HOMEPAGE_URL: "https://www.youtube.com/",
-    YOUTUBE_WATCH_URL: "https://www.youtube.com/watch",
-    YOUTUBE_SHORTS_URL: "https://www.youtube.com/shorts/",
-}
+  YOUTUBE_HOMEPAGE_URL: "https://www.youtube.com/",
+  YOUTUBE_WATCH_URL: "https://www.youtube.com/watch",
+  YOUTUBE_SHORTS_URL: "https://www.youtube.com/shorts/",
+};

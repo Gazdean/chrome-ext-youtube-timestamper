@@ -1,7 +1,6 @@
 import { Button } from "react-bootstrap";
 import type { StoredConfig, VideoEntry, VideoTimeStamps } from "../types";
-import { sortVideoEntrysAscOrder } from "../utils";
-import { STORAGE_LIMITS } from "../constants";
+import { CalculateMaxNumberOfTimestamps, sortVideoEntrysAscOrder } from "../utils";
 import { useEffect, useState } from "react";
 
 import EditButton from "../components/EditButton";
@@ -21,8 +20,8 @@ export default function YouTubeVideoPage({
 }: VideoTimestampInfoProps) {
   const [isAdPlaying, setIsAdPlaying] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [title, setTitle] = useState("")
-  const [isAutoPauseEnabled, setIsAutoPauseEnabled] = useState(false)
+  const [title, setTitle] = useState("");
+  const [isAutoPauseEnabled, setIsAutoPauseEnabled] = useState(false);
   const [isAddingDescriptionTo, setIsAddingDescriptionTo] = useState<
     number | null
   >(null);
@@ -31,26 +30,35 @@ export default function YouTubeVideoPage({
     if (!isAutoPauseEnabled && isAddingDescriptionTo) {
       chrome.tabs.sendMessage(
         activeTabId,
-        { type: "PLAY_VIDEO"},
+        { type: "PLAY_VIDEO" },
         async (response) => {
-          console.log(response)
-        }
-      )
+          console.log(response);
+        },
+      );
     }
-  }, [isAutoPauseEnabled, isAddingDescriptionTo, activeTabId])
+  }, [isAutoPauseEnabled, isAddingDescriptionTo, activeTabId]);
 
-  
   chrome.runtime.onMessage.addListener((message) => {
-    if (message.type === "UPDATE_UI_AD_STATUS" && message.forTabId === activeTabId) setIsAdPlaying(message.isAd);
-    
-    if (message.type === "TITLE_UPDATED") setTitle(message.title)
+    if (
+      message.type === "UPDATE_UI_AD_STATUS" &&
+      message.forTabId === activeTabId
+    )
+      setIsAdPlaying(message.isAd);
+
+    if (message.type === "TITLE_UPDATED") setTitle(message.title);
   });
 
   const handleOnClickMarkTimestamp = () => {
+    const isFirstTimeStamp = !videoEntry.videoTimestamps || videoEntry.videoTimestamps.length === 0;
+
     // send message to content to grab timestamp and video title
     chrome.tabs.sendMessage(
       activeTabId,
-      { type: "MARK_TIMESTAMP", pauseVideo: isAutoPauseEnabled},
+      {
+        type: "MARK_TIMESTAMP",
+        pauseVideo: isAutoPauseEnabled,
+        getVideoDuration: isFirstTimeStamp,
+      },
       async (response) => {
         if (chrome.runtime.lastError) {
           console.error("Error: Content Script not loaded. Refresh YouTube.");
@@ -59,23 +67,33 @@ export default function YouTubeVideoPage({
 
         if (response) {
           const timeStamp = response.time;
-          const config = await chrome.storage.local.get("videoData") as StoredConfig;
+          const config = (await chrome.storage.local.get(
+            "videoData",
+          )) as StoredConfig;
 
-          const existingVideoEntry: VideoEntry = config.videoData?.[youTubeVideoId] || {} as VideoEntry; 
-          const currTimeStamps: VideoTimeStamps = existingVideoEntry?.videoTimestamps || [] as VideoTimeStamps;
+          const existingVideoEntry: VideoEntry =
+            config.videoData?.[youTubeVideoId] || ({} as VideoEntry);
+          const currTimeStamps: VideoTimeStamps =
+            existingVideoEntry?.videoTimestamps || ([] as VideoTimeStamps);
 
           // Return early if the timestamp is already in storage
-          if (currTimeStamps.some(timestamp => timestamp.timeInSeconds === response?.time)) return
+          if (
+            currTimeStamps.some(
+              (timestamp) => timestamp.timeInSeconds === response?.time,
+            )
+          )
+            return;
 
           const newVideoEntry = {
-              ...existingVideoEntry,
-              title: existingVideoEntry.title || response.videoTitle,
-              videoTimestamps: sortVideoEntrysAscOrder([
+            ...existingVideoEntry,
+            title: existingVideoEntry.title || response.videoTitle,
+            videoTimestamps: sortVideoEntrysAscOrder([
               ...currTimeStamps,
               { timeInSeconds: timeStamp, created_at: Date.now() },
             ]),
-              created_at: existingVideoEntry.created_at || Date.now(),
-            };
+            created_at: existingVideoEntry.created_at || Date.now(),
+            maxTimestamps: existingVideoEntry.maxTimestamps || CalculateMaxNumberOfTimestamps(response.videoDuration),
+          };
 
           await chrome.storage.local.set({
             videoData: {
@@ -85,9 +103,8 @@ export default function YouTubeVideoPage({
           });
 
           if (isAutoPauseEnabled) {
-            setIsAddingDescriptionTo(timeStamp)
+            setIsAddingDescriptionTo(timeStamp);
           }
-          
         }
       },
     );
@@ -95,19 +112,32 @@ export default function YouTubeVideoPage({
 
   const isTimeStampLimitReached =
     videoEntry.videoTimestamps?.length >=
-    STORAGE_LIMITS.MAX_TIMESTAMPS_PER_VIDEO;
+    videoEntry.maxTimestamps;
 
   return (
     <div className="mx-1">
-      <AutoPauseButton isAutoPauseEnabled={isAutoPauseEnabled} setIsAutoPauseEnabled={setIsAutoPauseEnabled}/>
+      <AutoPauseButton
+        isAutoPauseEnabled={isAutoPauseEnabled}
+        setIsAutoPauseEnabled={setIsAutoPauseEnabled}
+      />
       <Button
         className="mb-4"
         style={{ width: "180px" }}
-        variant={isAdPlaying ? "warning" : isTimeStampLimitReached ? "danger" : "primary"}
+        variant={
+          isAdPlaying
+            ? "warning"
+            : isTimeStampLimitReached
+              ? "danger"
+              : "primary"
+        }
         onClick={handleOnClickMarkTimestamp}
         disabled={isTimeStampLimitReached || isAdPlaying || isEditing}
       >
-        {isAdPlaying ? "Please Wait" : isTimeStampLimitReached ? "Limit Reached" : "Mark Timestamp"}
+        {isAdPlaying
+          ? "Please Wait"
+          : isTimeStampLimitReached
+            ? "Limit Reached"
+            : "Mark Timestamp"}
       </Button>
 
       {Object.keys(videoEntry).length ? (

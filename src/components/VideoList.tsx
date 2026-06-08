@@ -15,7 +15,6 @@ export default function VideoList({
   isEditing,
   setIsEditing,
 }: VideoListProps) {
-
   const handleDeleteVideo = async (idToDelete: string) => {
     const storage = await chrome.storage.local.get("videoData");
     const currentVideoData = (storage.videoData || {}) as VideoData;
@@ -41,16 +40,20 @@ export default function VideoList({
               !isEditing && navigateActiveTab(createYouTubeUrl(id))
             }
           >
-          <div className="my-2 flex-grow-1">
-            <h3 className="h5">{formatTitle(videoData[id].title)}</h3>
-            <h4 className="h6">
-              No. Timestamps {videoData[id].videoTimestamps.length} /{" "}
-              {STORAGE_LIMITS.MAX_TIMESTAMPS_PER_VIDEO}
-            </h4>
-          </div>
-            
+            <div className="my-2 flex-grow-1">
+              <h3 className="h5">{formatTitle(videoData[id].title)}</h3>
+              <h4 className="h6">
+                No. Timestamps {videoData[id].videoTimestamps.length} /{" "}
+                {STORAGE_LIMITS.FREE_TIER_MAX_TIMESTAMPS_PER_VIDEO}
+              </h4>
+            </div>
+
             {isEditing && (
-              <Button className="me-1 my-1 rounded-0 rounded-end-2 jusify-self-end" variant="danger" onClick={() => handleDeleteVideo(id)}>
+              <Button
+                className="me-1 my-1 rounded-0 rounded-end-2 jusify-self-end"
+                variant="danger"
+                onClick={() => handleDeleteVideo(id)}
+              >
                 Del
               </Button>
             )}

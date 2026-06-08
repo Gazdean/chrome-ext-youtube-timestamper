@@ -1,4 +1,4 @@
-import { APP_CONFIG } from "./constants"
+import { APP_CONFIG, TIMESTAMP_CONSTANTS } from "./constants"
 import type { VideoTimestamp } from "./types"
 
 export const convertToHMS = (timeInSeconds: number) => {
@@ -46,3 +46,11 @@ export const createYouTubeUrl = (youTubeId: string, timeInSeconds?: number) => {
 export const formatTitle = (titleStr: string) => {
         return titleStr.length <= 38 ? titleStr : titleStr.slice(0, 35) + "...";
     };
+
+export const CalculateMaxNumberOfTimestamps = (videoDuration: number, isPaidTier: boolean = false): number => {
+    const videoLengthInMinutes = videoDuration / 60
+    const minutesPerTimestamp = isPaidTier ? TIMESTAMP_CONSTANTS.PAID_TIER_MINUTES_PER_EXTRA_TIME_STAMP : TIMESTAMP_CONSTANTS.FREE_TIER_MINUTES_PER_EXTRA_TIME_STAMP
+    const numberOfTimeStamps = Math.floor(videoLengthInMinutes / minutesPerTimestamp)
+
+    return Math.max(numberOfTimeStamps, TIMESTAMP_CONSTANTS.BASE_NUMBER_TIMESTAMPS_PER_VIDEO)
+}
